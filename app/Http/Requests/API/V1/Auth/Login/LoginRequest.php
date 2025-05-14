@@ -3,7 +3,6 @@
 namespace App\Http\Requests\API\V1\Auth\Login;
 
 use App\DTO\EmailCodeRequestDTO;
-use App\Rules\EmailNotVerified;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
@@ -25,7 +24,7 @@ class LoginRequest extends FormRequest
     {
         return [
             'code' => 'required|string|size:6',
-            'email' => ['required', 'email', 'exists:users,email', new EmailNotVerified()]
+            'email' => 'required|email|exists:users,email'
         ];
     }
 

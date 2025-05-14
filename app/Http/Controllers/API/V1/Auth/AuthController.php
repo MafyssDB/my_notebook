@@ -28,11 +28,10 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $user = $this->userService->register($request->toDto());
+        $this->userService->register($request->toDto());
         return ApiResponse::success(
-            ['email' => $user->email],
-            'Регистрация прошла успешно! Код подтверждения отправлен на почту: ' . $user->email,
-            201
+            message: 'Регистрация прошла успешно!',
+            code: 201
         );
     }
 

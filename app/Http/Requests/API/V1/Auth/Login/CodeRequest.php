@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\API\V1\Auth\Login;
 
-use App\Rules\EmailNotVerified;
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class CodeRequest extends FormRequest
@@ -23,7 +23,7 @@ class CodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', 'exists:users,email', new EmailNotVerified()]
+            'email' => ['required', 'email', 'exists:users,email']
         ];
     }
 

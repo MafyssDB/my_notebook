@@ -6,7 +6,6 @@ use App\DTO\EmailCodeRequestDTO;
 use App\DTO\UserDTO;
 use App\Exceptions\InvalidConfirmationCodeException;
 use App\Models\User;
-use App\Notifications\EmailVerificationCode;
 use App\Notifications\LoginCode;
 use App\Repositories\UserRepository;
 use Random\RandomException;
@@ -22,22 +21,9 @@ class UserService
     /**
      * @throws RandomException
      */
-    public function register(UserDTO $userDTO)
+    public function register(UserDTO $userDTO): void
     {
-        $user = $this->userRepository->create($userDTO);
-        $this->sendConfirmCode($user, EmailVerificationCode::class);
-        return $user;
-    }
-
-    /**
-     * @throws InvalidConfirmationCodeException
-     */
-    public function verifyEmail(EmailCodeRequestDTO $dto): void
-    {
-        $user = $this->userRepository->findUserByEmail($dto->email);
-        $this->isConfirmCodeValid($user->id, $dto->code);
-        $user->markEmailAsVerified();
-        $this->userRepository->forgetConfirmCodeById($user->id);
+        $this->userRepository->create($userDTO);
     }
 
     /**
@@ -46,7 +32,8 @@ class UserService
     public function sendLoginCode(string $email)
     {
         $user = $this->userRepository->findUserByEmail($email);
-        $this->sendConfirmCode($user, LoginCode::class);
+        $code = $this->generateConfirmCode($user);
+        $user->notify(new LoginCode($code));
         return $user;
     }
 
@@ -57,29 +44,14 @@ class UserService
     {
         $user = $this->userRepository->findUserByEmail($dto->email);
         $this->isConfirmCodeValid($user->id, $dto->code);
+        if (!$user->hasVerifiedEmail()){
+            $user->markEmailAsVerified();
+        }
         $this->userRepository->forgetConfirmCodeById($user->id);
         return $user;
     }
 
-    /**
-     * @throws RandomException
-     */
-    public function resendConfirmCode(string $email, string $notificationClass): void
-    {
-        $user = $this->userRepository->findUserByEmail($email);
-        $this->sendConfirmCode($user, $notificationClass);
-    }
-
     // ----------------- UTILITIES ------------------ //
-
-    /**
-     * @throws RandomException
-     */
-    private function sendConfirmCode(User $user, string $notificationClass): void
-    {
-        $code = $this->generateConfirmCode($user);
-        $user->notify(new $notificationClass($code));
-    }
 
     /**
      * @throws RandomException

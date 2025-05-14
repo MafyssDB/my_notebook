@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Cache;
 class UserRepository
 {
     // -------------------- CRUD -------------------- //
-    public function create(UserDTO $userDTO)
+    public function create(UserDTO $userDTO): void
     {
-        return User::query()->create([
+        User::query()->create([
             'email' => $userDTO->email,
             'name' => $userDTO->name,
         ]);
