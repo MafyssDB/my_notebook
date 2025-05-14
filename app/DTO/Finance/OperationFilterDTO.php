@@ -9,8 +9,8 @@ class OperationFilterDTO
     public function __construct(
         public readonly Carbon $from,
         public readonly Carbon $to,
-        public readonly ?int $offset,
-        public readonly ?int $limit
+        public readonly int $offset,
+        public readonly int $limit
     )
     {
     }
@@ -20,8 +20,8 @@ class OperationFilterDTO
         return new static(
             $data['from'],
             $data['to'],
-            $data['offset'] ?? null,
-            $data['limit'] ?? null,
+            $data['offset'] ?? 0,
+            $data['limit'] ?? 15,
         );
     }
 }

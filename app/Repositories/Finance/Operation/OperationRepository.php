@@ -24,12 +24,15 @@ abstract class OperationRepository
     public function getAll(OperationFilterDTO $dto)
     {
         return Cache::rememberForever(CacheKeyHelper::getListKey($this::$modelClass), function () use ($dto) {
-            return $this->returnQueryForOperations($dto)
-                ->orderByDesc('date_operation')
-                ->skip($dto->offset)    // Смещение
-                ->take($dto->limit)     // Количество записей
-                ->get();
-//                ->paginate(3);
+            $query = $this->returnQueryForOperations($dto)
+                ->orderByDesc('date_operation');
+            return [
+                'total' => $query->count(),
+                'items' => $query
+                    ->skip($dto->offset)
+                    ->take($dto->limit)
+                    ->get(),
+            ];
         });
     }
 

@@ -22,7 +22,10 @@ abstract class OperationController extends Controller
     public function index(FilterRequest $request): JsonResponse
     {
         $operations = $this->operationRepository->getAll($request->toDto());
-        return ApiResponse::success(OperationResource::collection($operations));
+        return ApiResponse::success([
+            'total' => $operations['total'],
+            'items' => OperationResource::collection($operations['items'])
+        ]);
     }
 
     /**
